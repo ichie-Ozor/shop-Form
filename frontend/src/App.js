@@ -15,6 +15,7 @@ const App = () => {
   const [openForm, setOpenForm] = useState(false)
   const [data, setData] = useState([])
   const [itemSearch, setItemSearch] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
   const [form, setform] = useState({
     date: "",
     name: "",
@@ -31,7 +32,15 @@ const App = () => {
       })
   }, [])
 
-  console.log(data, "data")
+  ///////////////pagination
+  const recordsPerPage = 6;
+  const lastIndex = currentPage * recordsPerPage;
+  const firstIndex = lastIndex - recordsPerPage;
+  const records = data.slice(firstIndex, lastIndex);
+  const npage = Math.ceil(data.length / recordsPerPage)
+  const numbers = [...Array(npage + 1).keys()].slice(1)
+
+
   const handleChange = (e) => {
     const { name, value, files } = e.target
     if (name === "file") {
@@ -65,6 +74,7 @@ const App = () => {
       .catch((err) => console.log(err, "error"))
     setOpenForm(false)
   };
+
   return (
     <div className="container mt-4">
       {!openForm ?
@@ -119,7 +129,7 @@ const App = () => {
             </thead>
             <tbody>
               {
-                data?.map((item, index) =>
+                records?.map((item, index) =>
                   <tr>
                     <td>{index + 1}</td>
                     <td>{item.name}</td>
@@ -270,8 +280,38 @@ const App = () => {
             </Button>
           </CardBody>
         </Card>}
+      <nav>
+        <ul className='pagination'>
+          <li className='page-item'>
+            <a href='#' onClick={prePage} className='page-link'>Prev</a>
+          </li>
+          {
+            numbers.map((n, i) => (
+              <li key={i} className={`page-item ${currentPage === n ? "active" : ""}`}>
+                <a href='#' onClick={() => changeCurrentPage(n)} className='page-link'>{n}</a>
+              </li>
+            ))
+          }
+          <li className='page-item'>
+            <a href='#' onClick={nextPage} className='page-link'>Next</a>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
+  function prePage() {
+    if (currentPage !== 1) {
+      setCurrentPage(currentPage - 1)
+    }
+  }
+  function nextPage() {
+    if (currentPage !== npage) {
+      setCurrentPage(currentPage + 1)
+    }
+  }
+  function changeCurrentPage(value) {
+    setCurrentPage(value)
+  }
 }
 
 export default App
