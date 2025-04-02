@@ -6,6 +6,7 @@ import waterMarkImage from "./image/watermark2.jpg";
 import { QRCode } from 'react-qr-code'
 
 const Certificate = React.forwardRef(({ Image, value = {} }, ref) => {
+    console.log(Image, "image", value)
     const { date, name, shop_no, allocation } = value
     const qrDetails = `${name} | ${shop_no} | ${date}`
     return (
@@ -38,7 +39,9 @@ const Certificate = React.forwardRef(({ Image, value = {} }, ref) => {
                         marginLeft: 200,
                         marginBottom: 30,
                     }}
-                >{name}</div>
+                >
+                    {name}
+                </div>
                 <div style={{ textAlign: "justify" }}>
                     <h4 style={{ fontSize: "26px", textTransform: "uppercase" }}>
                         He/She is now the original allottee of .....................
@@ -48,8 +51,8 @@ const Certificate = React.forwardRef(({ Image, value = {} }, ref) => {
                         ........................................
                     </h4>
                     <h4 style={{ fontSize: "26px" }}>
-                        Date
-                        ...........................................................................................
+                        Date: {date}
+                        {/* ........................................................................................... */}
                     </h4>
                 </div>
                 <div style={styles.signatureContainer}>
@@ -130,6 +133,7 @@ const styles = {
         flexDirection: "column",
         float: "right",
         marginTop: "100px",
+        paddingRight: "50px"
     },
     signature: {
         width: "200px",

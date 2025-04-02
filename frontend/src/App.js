@@ -671,6 +671,7 @@ const FileUploadCard = ({ onFileSelect, selectedFile, onRemoveFile }) => {
 const App = () => {
   const contentRef = useRef(null);
   const [openForm, setOpenForm] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null)
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -714,10 +715,15 @@ const App = () => {
   const totalPages = Math.ceil(filteredData.length / recordsPerPage);
 
   // Download PDF function
-  const downloadPDF = useCallback(async () => {
+  const downloadPDF = useCallback(async (item) => {
     if (!contentRef.current) return;
 
+    console.log(item, "itemmmmmm")
     try {
+      setSelectedItem(item)
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       const canvas = await html2canvas(contentRef.current, {
         scale: 2,
         useCORS: true,
@@ -732,7 +738,7 @@ const App = () => {
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
       pdf.addImage(canvas, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save('certificate.pdf');
+      pdf.save(`certificate_${item.shop_no}_${item.name}.pdf`);
     } catch (error) {
       console.error('Error generating PDF:', error);
       setError('Failed to generate PDF. Please try again.');
@@ -882,7 +888,7 @@ const App = () => {
                               <div style={{ position: 'absolute', left: '-9999px' }}>
                                 <Certificate
                                   ref={contentRef}
-                                  value={item}
+                                  value={selectedItem}
                                   Image={item.image_url ? `http://localhost:3000/uploads/${item.image_url}` : ''}
                                 />
                               </div>
@@ -890,7 +896,7 @@ const App = () => {
                                 color="primary"
                                 size="sm"
                                 className="d-flex align-items-center gap-2 mx-auto"
-                                onClick={downloadPDF}
+                                onClick={() => downloadPDF(item)}
                                 style={{ width: 'fit-content' }}
                               >
                                 <FileDown size={16} />
