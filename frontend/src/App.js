@@ -12,7 +12,7 @@ import {
   InputGroup, InputGroupText, Spinner, Alert, Modal, ModalHeader, ModalBody, ModalFooter
 } from 'reactstrap';
 import html2canvas from 'html2canvas';
-import { Certificate } from './Certificate';
+import Certificate from './Certificate';
 const App = () => {
   const contentRef = useRef(null);
   const [openForm, setOpenForm] = useState(false);
@@ -37,6 +37,7 @@ const App = () => {
       try {
         setLoading(true);
         const response = await axios.get("http://localhost:3000/form");
+        console.log(response, "response")
         setData(response?.data?.resp || []);
       } catch (err) {
         console.error("Error fetching data:", err);

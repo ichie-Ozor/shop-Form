@@ -11,6 +11,7 @@ module.exports.createForm = async (req, res) => {
     console.log(req.body, "body", req.file)
     const uuid = uuidv4()
 
+    /////////////////////////////////////this is cloudinary and its working
     // if (!req.file.path) {
     //     return res.status(400).json({
     //         success: false,
@@ -35,6 +36,11 @@ module.exports.createForm = async (req, res) => {
 
     // console.log(data, "data in controller")
     // const image_url = data.secure_url
+    const [code] = await db.sequelize.query(`SELECT * FROM number_generator`)
+    const { prefix, code_no } = code[0]
+    const codeNo = code_no + 1
+    const userID = `${prefix}-MARM-${moment().format("YY")}-${codeNo}`
+    console.log(code[0], "code for num_gen", userID, "here", code_no)
 
     db.sequelize.query(`CALL form(
         :query_type,
@@ -47,7 +53,7 @@ module.exports.createForm = async (req, res) => {
         )`, {
         replacements: {
             query_type,
-            Id: uuid,
+            Id: userID,
             date: moment(date).format("YYYY-MM-DD"),
             name,
             shop_no,
@@ -56,18 +62,24 @@ module.exports.createForm = async (req, res) => {
         }
     }
     ).then((result) => {
+        db.sequelize.query(`UPDATE number_generator SET code_no=${codeNo} WHERE prefix="KN"`)
         res.status(200).json({
             success: true,
             message: "Form formed successfully"
         })
     }).catch((err) => {
-        console.log(err, "error", uuid)
+        console.log(err, "error", userID)
         res.status(400).json({
             success: false,
             message: "Something went wrong while trying to save the form",
 
         })
     })
+    // db.sequelize.query(`CALL number_generator(:userID)`, {
+    //     replacements: {
+    //         userID,
+    //     },
+    // })
 }
 
 module.exports.getForm = async (req, res) => {

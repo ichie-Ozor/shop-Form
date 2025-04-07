@@ -6,9 +6,9 @@ import waterMarkImage from "./image/watermark2.jpg";
 import verify from "./verified.png"
 import { QRCode } from 'react-qr-code'
 import moment from 'moment'
-export const Certificate = React.forwardRef(({ Image, value = {} }, ref) => {
-    console.log(Image, "image", value)
-    const { date, name, shop_no, allocation,image_url } = value
+ export const Certificate = React.forwardRef(({ Image, value = {} }, ref) => {
+    const { date, name, shop_no, allocation, Id,image_url } = value
+    console.log(Image, "image", value, "id", Id)
     const qrDetails = `${name} | ${shop_no} | ${date}`
 
 
@@ -18,7 +18,10 @@ export const Certificate = React.forwardRef(({ Image, value = {} }, ref) => {
             <div style={styles.container}>
                 {/* {JSON.stringify(value)} */}
                 <h2 style={styles.header}>KANO STATE GOVERNMENT</h2>
-                <img src={logoImage} alt="Logo" style={styles.logo} />
+                <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", width: "100%" }}>
+                    <img src={logoImage} alt="Logo" style={styles.logo} />
+                    <div style={styles.id}>UID: {Id}</div>
+                </div>
                 <h3 style={styles.subheader}>Change of Allottee Name Certificate</h3>
                 <h3 style={styles.subsubheader}>
                     Muhammad Abubakar Rimi sabon gari market company limited
@@ -151,6 +154,12 @@ const styles = {
         margin: "auto",
         padding: "40px",
     },
+    id: {
+        fontWeight: "bold",
+        marginTop: 50,
+        width: "60%",
+        marginLeft: -100
+    },
     header: {
         fontSize: "33px",
         fontWeight: "bold",
@@ -187,6 +196,7 @@ const styles = {
         height: "auto",
         marginTop: -135,
         marginBottom: -180,
+        marginLeft: 100
     },
     qrCode: {
         width: "160px",
