@@ -194,29 +194,29 @@
 
 //   //////////////////Download
 
-//   const downloadPDF = async () => {
-//     const element = contentRef.current
-//     if (!element) return
-//     try {
-//       const canvas = await html2canvas(element, {
-//         scale: 2,
-//         useCORS: true,
-//         logging: true,
-//         scrollX: 0,
-//         scrollY: 0
-//       });
-//       const pdf = new jsPDF('p', 'mm', 'a4');
-//       const imgProps = pdf.getImageProperties(canvas);
-//       const pdfWidth = pdf.internal.pageSize.getWidth();
-//       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+// const downloadPDF = async () => {
+//   const element = contentRef.current
+//   if (!element) return
+//   try {
+//     const canvas = await html2canvas(element, {
+//       scale: 2,
+//       useCORS: true,
+//       logging: true,
+//       scrollX: 0,
+//       scrollY: 0
+//     });
+//     const pdf = new jsPDF('p', 'mm', 'a4');
+//     const imgProps = pdf.getImageProperties(canvas);
+//     const pdfWidth = pdf.internal.pageSize.getWidth();
+//     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-//       pdf.addImage(canvas, 'PNG', 0, 0, pdfWidth, pdfHeight);
-//       pdf.save('document.pdf');
-//     } catch (error) {
-//       console.error('Error generating PDF:', error);
-//       alert('Failed to generate PDF');
-//     }
-//   };
+//     pdf.addImage(canvas, 'PNG', 0, 0, pdfWidth, pdfHeight);
+//     pdf.save('document.pdf');
+//   } catch (error) {
+//     console.error('Error generating PDF:', error);
+//     alert('Failed to generate PDF');
+//   }
+// };
 
 //   const handleChange = (e) => {
 //     const { name, value, files } = e.target
@@ -550,6 +550,8 @@
 
 // export default App
 
+/////////////////////////////////////////////////////////////////////////////////
+
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import axios from 'axios';
 import html2canvas from 'html2canvas';
@@ -691,6 +693,7 @@ const App = () => {
       try {
         setLoading(true);
         const response = await axios.get("http://localhost:3000/form");
+        console.log(response, "response")
         setData(response?.data?.resp || []);
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -714,36 +717,70 @@ const App = () => {
   const records = filteredData.slice(firstIndex, lastIndex);
   const totalPages = Math.ceil(filteredData.length / recordsPerPage);
 
-  // Download PDF function
-  const downloadPDF = useCallback(async (item) => {
-    if (!contentRef.current) return;
 
-    console.log(item, "itemmmmmm")
+  const downloadPDF = async (item) => {
+    const element = contentRef.current
+    console.log(item, "item")
+    setSelectedItem(item)
+    if (!element) return
     try {
-      setSelectedItem(item)
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 50));
 
-      const canvas = await html2canvas(contentRef.current, {
+      const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
-        logging: false,
+        logging: true,
         scrollX: 0,
         scrollY: 0
       });
-
       const pdf = new jsPDF('p', 'mm', 'a4');
       const imgProps = pdf.getImageProperties(canvas);
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
       pdf.addImage(canvas, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`certificate_${item.shop_no}_${item.name}.pdf`);
+      pdf.save('document.pdf');
     } catch (error) {
       console.error('Error generating PDF:', error);
-      setError('Failed to generate PDF. Please try again.');
+      alert('Failed to generate PDF');
     }
-  }, []);
+  };
+
+
+
+  // Download PDF function
+  // const downloadPDF = useCallback(async (item) => {
+  //   if (!contentRef.current) return;
+
+  //   console.log(item, "itemmmmmm")
+  //   setSelectedItem(item)
+  //   try {
+
+  //     await new Promise(resolve => setTimeout(resolve, 100));
+
+  //     const canvas = await html2canvas(contentRef.current, {
+  //       scale: 2,
+  //       useCORS: true,
+  //       logging: false,
+  //       scrollX: 0,
+  //       scrollY: 0
+  //     });
+
+  //     const pdf = new jsPDF('p', 'mm', 'a4');
+  //     const imgProps = pdf.getImageProperties(canvas);
+  //     const pdfWidth = pdf.internal.pageSize.getWidth();
+  //     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+  //     pdf.addImage(canvas, 'PNG', 0, 0, pdfWidth, pdfHeight);
+  //     pdf.save(`certificate_${item.shop_no}_${item.name}.pdf`);
+  //   } catch (error) {
+  //     console.error('Error generating PDF:', error);
+  //     setError('Failed to generate PDF. Please try again.');
+  //   }
+  // }, []);
+
+  console.log(selectedItem, "set item")
 
   // Form handlers
   const handleChange = (e) => {
@@ -886,11 +923,13 @@ const App = () => {
                             <td>{new Date(item.date).toLocaleDateString()}</td>
                             <td className="text-center">
                               <div style={{ position: 'absolute', left: '-9999px' }}>
-                                <Certificate
-                                  ref={contentRef}
-                                  value={selectedItem}
-                                  Image={item.image_url ? `http://localhost:3000/uploads/${item.image_url}` : ''}
-                                />
+
+                                {selectedItem !== null ?
+                                  <Certificate
+                                    ref={contentRef}
+                                    value={selectedItem}
+                                    Image={item.image_url ? `http://localhost:3000/uploads/${item.image_url}` : ''}
+                                  /> : ""}
                               </div>
                               <Button
                                 color="primary"
