@@ -14,12 +14,28 @@ let port = process.env.PORT || 3000
 
 app.use(express.static(__dirname + "/public"))
 
-app.use(
-    "/uploads",
-    express.static(path.join(__dirname, "..", "src", "uploads"))
-);
+
+// app.use(
+//     "/uploads",
+//     express.static(path.join(__dirname, "..", "src", "uploads"))
+ 
+    
+// );
+app.use('/uploads', (req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET');
+    res.header('Cross-Origin-Resource-Policy', 'cross-origin');
+    next();
+}, express.static(path.join(__dirname, "..", "src", "uploads")));
 
 app.use(cors())
+
+
+app.use(cors({
+    origin: '*', // During development, you can use '*'. For production, specify your frontend domain
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 models.sequelize.sync().then(() => {
     console.log("Drop and Resync with {force: true}")
